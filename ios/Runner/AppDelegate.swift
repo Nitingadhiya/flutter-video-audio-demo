@@ -1,6 +1,5 @@
 import UIKit
 import Flutter
-import GoogleMaps
 import FirebaseCore
 import CallKit
 import AVFAudio
@@ -14,8 +13,6 @@ import flutter_callkit_incoming
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
     FirebaseApp.configure()
-//     GMSServices.provideAPIKey("AIzaSyDmkhhZw4g4o2yEIIxgR8TgIWTqKv9ChzY")
-    GMSServices.provideAPIKey("AIzaSyCkFwSYc2JcoD8vCBPpBR1USeydj0u4J1U")
     GeneratedPluginRegistrant.register(with: self)
            let mainQueue = DispatchQueue.main
            let voipRegistry: PKPushRegistry = PKPushRegistry(queue: mainQueue)
