@@ -1,14 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:video_audio_call/firebase_options.dart';
+import 'package:video_audio_call/view/FirebaseMessaging.dart';
 import 'package:video_audio_call/view/login_screen.dart';
+
+final storage = GetStorage();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await GetStorage.init();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  FirebaseNotificationService.initializeService();
   runApp(const MyApp());
 }
 
