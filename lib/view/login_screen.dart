@@ -54,7 +54,8 @@ class _SignInScreenState extends State<SignInScreen> {
                     for (var element in getUserData) {
                       if (element.email == _emailController.text) {
                         databaseService.updateUser(element.id ?? "", UserModel(email: _emailController.text, id: user.uid, name: element.name, token: storage.read("fcmToken")));
-                        userModel = UserModel(email: _emailController.text, id: user.uid, name: element.name, token: storage.read("fcmToken"));
+                        userModel = UserModel(email: _emailController.text, id: element.id, name: element.name, token: storage.read("fcmToken"));
+                        storage.write("user", userModel.toMap());
                         Get.to(() => HomeScreen());
                         break;
                       }

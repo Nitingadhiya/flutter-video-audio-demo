@@ -8,20 +8,18 @@ class PushNotification {
   String? channelName;
   String? type;
   String? videoToken;
-  String userCallingId;
-  bool isThatGroupChat;
+  String isAudio;
   PushNotification({
     required this.body,
     required this.title,
     required this.deviceToken,
     required this.loginUserDeviceToken,
-    this.userCallingId = '',
     required this.routeParameterId,
     this.videoToken,
     this.channelName,
     this.type,
     required this.notificationRoute,
-    this.isThatGroupChat = false,
+    this.isAudio = "false",
   });
 
   Map<String, dynamic> toMap() =>
@@ -36,7 +34,7 @@ class PushNotification {
             'loginUserDeviceToken': loginUserDeviceToken,
             'videoToken': videoToken,
             'routeParameterId': routeParameterId,
-            'userCallingId': userCallingId,
+            'isAudio': isAudio,
           },
           "token": deviceToken,
         }

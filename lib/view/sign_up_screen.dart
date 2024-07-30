@@ -6,6 +6,7 @@ import 'package:video_audio_call/model/user_model.dart';
 import 'package:video_audio_call/service/auth_service.dart';
 import 'package:video_audio_call/service/database.dart';
 import 'package:video_audio_call/view/Homescreen.dart';
+import 'package:video_audio_call/view/login_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -50,7 +51,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 if (user != null) {
                   final DatabaseService databaseService = DatabaseService();
                   databaseService.addUser(UserModel(name: _nameController.text, email: _emailController.text, id: user.uid, token: storage.read("fcmToken")));
-
+                  userModel = UserModel(email: _emailController.text, id: user.uid, name: _nameController.text, token: storage.read("fcmToken"));
+                  storage.write("user", userModel.toMap());
                   Get.to(() => HomeScreen());
                 }
               },

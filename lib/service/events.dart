@@ -6,6 +6,7 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:get/get.dart';
 import 'package:video_audio_call/main.dart';
 import 'package:video_audio_call/model/push_notification_model.dart';
+import 'package:video_audio_call/service/config.dart';
 import 'package:video_audio_call/view/video_call_new_screen.dart';
 import 'package:http/http.dart' as http;
 
@@ -24,11 +25,13 @@ callEvent() {
       case Event.actionCallAccept:
         print("00------------${event.body["extra"]["channelName"]}");
         print("00------------${event.body["extra"]["videoToken"]}");
+        print("00------------${event.body["extra"]["isAudio"]}");
         Future.delayed(Duration(seconds: 1), () {
           try {
             Get.to(() => VideoCallScreen(
                   channelId: event.body["extra"]["channelName"],
                   token: event.body["extra"]["videoToken"],
+                  isAudio: event.body["extra"]["isAudio"],
                 ));
             // Navigator.push(
             //   Get.context!,
@@ -44,6 +47,7 @@ callEvent() {
         });
         await storage.write("channelName", event.body["extra"]["channelName"]);
         await storage.write("videoToken", event.body["extra"]["videoToken"]);
+        await storage.write("isAudio", event.body["extra"]["isAudio"]);
 
         // await Go(context).push(
         //     page: VideoCallScreen(
@@ -103,10 +107,7 @@ Future<void> sendPopupNotification({required PushNotification pushNotification})
         Uri.parse('https://fcm.googleapis.com/v1/projects/video-audio-call-faf0f/messages:send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
-
-          /// conect with cloud messaging and get server key from project settings here
-          /// replace the points with your key  "key=...." and set it in [notificationKey]
-          'Authorization': "Bearer ya29.c.c0ASRK0Gbp2r8B-ttUnV88F44jFd99rfw8s68eJ71hwDp1Jjw2klZVBVeKGpP0oGYHyiJUNQeiKNNEfMKCzf4D_IatwZjKY_j7MGGzjAKGK3QXnt-4QuB4OCeClZCKuO15DBkmT5VU0-UCBI3AzfHZ2vxQsOYmKbstj4s7uOJhtEACnAGxj7pl7CcZFeZePYLogeKo6ZLemajJDARnEZV9cjoTzYzAuJccQC5l6MDjDAo1aO32oFYuf1cvyeTHjyYzEyPtQhtBwfOaP6fFA5C0Dz_SjNDfLUtgJgm-Fe7gFQVC9rs2ABYKhUrX2tmOglz-le8iiScKfWHpW6o_M3qfst_JPxl25TpVwWLA698srY0NrZaaiOBhWLVxG385K_oyQwf_21idxgX1UR7-nQI6Ql3S_cOJXQcZnb-dJMz3V2Jktbw3sJV0O9a1iw7FQytbFaSBIhBMuM-4VFRlxyaprtYIoBzFmw4tFbVsjjduUdo1MgFhz0csqOOiu8x66t0X46ny6MZk7lQaWj5rfXgxZcRXk82Mno6OBszU4w9SbvqiROxzfrhZg8V54OjcgclxQUZ334VQg0V4nYYvy1IyMQyjYrMyj2y7WM-fU4Jvfc-zjkr5mg1i0r5ef37fXp1iJ1VbfWod5iwusx-BkO8h_r2W0bxZQtnbr1vwxauykFzjue1uzskZnu6B8j0Or-YjxyhuxiZasZ1wj6Y11hUyJJnxZ-vtUdB_fXsq1Q1JbdsUsazjSZv-Uw1bVRwMR7QMz9lpeojIrdRSkO6gfqQ8iQ4wVbitMh7fFb9gcoimc0S9Zh8_mjvld4S5yyyu-guU4s-w4SgQO-k8aOl9lJvvQSB_-irkhuO37w95F4dpqXdpudcRfJSasnYjUMbah3v4_lkot385_61smd14bF9fsXe199Xxt_J8zlx8RQ2xI-q7nJIFXORgcgV7S7mpOohfipY6aX23Ik7buYqQ3kSw13l7mbY4wnyrmu7w4ryXnBgWSZl_Ym9B8y0",
+          'Authorization': "Bearer $notificationAccessToken",
         },
         body: jsonEncode(pushNotification.toMap()),
       );
@@ -121,13 +122,15 @@ Future<void> sendPopupNotification({required PushNotification pushNotification})
   }
 }
 
-getVideoCall() async {
+getVideoCall()  {
   String? channelName = storage.read("channelName");
   String? videoToken = storage.read("videoToken");
+  String? isAudio = storage.read("isAudio");
   if (channelName != null && videoToken != null) {
     Get.to(() => VideoCallScreen(
           channelId: channelName,
           token: videoToken,
+          isAudio: isAudio ?? "false",
         ));
   }
 }

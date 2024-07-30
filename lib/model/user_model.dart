@@ -19,8 +19,8 @@ class UserModel {
   }
 
   // Extract a UserModel from a Map
-  UserModel.fromMap(String id, Map<String, dynamic> map)
-      : id = id,
+  UserModel.fromMap(Map<String, dynamic> map)
+      : id =  map['id'],
         name = map['name'],
         email = map['email'],
         token = map['token'],

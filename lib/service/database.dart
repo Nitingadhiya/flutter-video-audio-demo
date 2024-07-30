@@ -28,7 +28,7 @@ class DatabaseService {
   Stream<List<UserModel>> getUsers() {
     return fireStore.snapshots().map((QuerySnapshot snapshot) {
       return snapshot.docs.map((DocumentSnapshot doc) {
-        return UserModel.fromMap(doc.id, doc.data() as Map<String, dynamic>);
+        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
       }).toList();
     });
   }

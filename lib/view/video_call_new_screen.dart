@@ -3,14 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_audio_call/main.dart';
+import 'package:video_audio_call/service/config.dart';
 
-String videoAppId = "089c19bcc63b43d6930a6bc7caa632da";
-String certificateId = "ce76d60a27794dc7a9785c47124595b9";
 
 class VideoCallScreen extends StatefulWidget {
   final String channelId;
   final String token;
-  const VideoCallScreen({super.key, required this.channelId, required this.token});
+  final String isAudio;
+  const VideoCallScreen({super.key, required this.channelId, required this.token, required this.isAudio});
 
   @override
   State<VideoCallScreen> createState() => _VideoCallScreenState();
@@ -70,7 +71,10 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     );
 
     await videoEngine.setClientRole(role: ClientRoleType.clientRoleBroadcaster);
-    // await videoEngine.enableVideo();
+    if (widget.isAudio == "false") {
+      await videoEngine.enableVideo();
+    }
+
     await videoEngine.startPreview();
 
     await videoEngine.joinChannel(
@@ -103,29 +107,36 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
       ),
       body: Stack(
         children: [
-          Center(
-            child: _remoteVideo(),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: SizedBox(
-              width: 150,
-              height: 200,
-              child: Center(
-                child: _localUserJoined
-                    ? Container(
-                        decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
-                        child: AgoraVideoView(
-                          controller: VideoViewController(
-                            rtcEngine: videoEngine,
-                            canvas: const VideoCanvas(uid: 0),
-                          ),
-                        ),
-                      )
-                    : const CircularProgressIndicator(),
-              ),
+          if (widget.isAudio == "false")
+            Center(
+              child: _remoteVideo(),
             ),
-          ),
+          if (widget.isAudio == "false")
+            Align(
+              alignment: Alignment.topLeft,
+              child: SizedBox(
+                width: 150,
+                height: 200,
+                child: Center(
+                  child: _localUserJoined
+                      ? Container(
+                          decoration: BoxDecoration(border: Border.all(color: Colors.blue)),
+                          child: AgoraVideoView(
+                            controller: VideoViewController(
+                              rtcEngine: videoEngine,
+                              canvas: const VideoCanvas(uid: 0),
+                            ),
+                          ),
+                        )
+                      : const CircularProgressIndicator(),
+                ),
+              ),
+            )
+          else
+            Container(
+              height: MediaQuery.of(context).size.height,
+              color: Colors.black.withOpacity(0.4),
+            ),
           Positioned(
               bottom: 50,
               child: SizedBox(
@@ -224,9 +235,8 @@ leaveCall() async {
   await videoEngine.release();
 }
 
-
 removeVideoData() async {
   // final SharedPreferences sharePrefs = injector<SharedPreferences>();
-  // await sharePrefs.remove("channelName");
-  // await sharePrefs.remove("videoToken");
+  await storage.remove("channelName");
+  await storage.remove("videoToken");
 }

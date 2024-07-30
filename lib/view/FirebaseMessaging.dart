@@ -13,7 +13,11 @@ import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
 import 'package:uuid/uuid.dart';
 import 'package:video_audio_call/main.dart';
+import 'package:video_audio_call/model/user_model.dart';
+import 'package:video_audio_call/service/database.dart';
 import 'package:video_audio_call/view/video_call_new_screen.dart';
+
+import 'login_screen.dart';
 
 
 class FirebaseNotificationService {
@@ -40,12 +44,18 @@ class FirebaseNotificationService {
         print("FCM-TOKEN $token");
       }
       storage.write("fcmToken", token);
+      if(storage.read("user") != null){
+        userModel = UserModel.fromMap(storage.read("user"));
+        userModel.token = storage.read("fcmToken");
+        storage.write("user", userModel.toMap());
+        final DatabaseService databaseService = DatabaseService();
+        databaseService.updateUser(userModel.id ?? "",userModel);
+      }
     });
   }
 
   static getNotification() async {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print("--------notifaction ------------ ");
       String? type = message.data["type"];
       showCallkitIncoming(message);
       if (type?.isEmpty ?? true) {
@@ -58,7 +68,6 @@ class FirebaseNotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      print("--onMessageOpenedApp------notifaction ------------ ");
       showCallkitIncoming(message);
     });
 
@@ -84,7 +93,7 @@ class FirebaseNotificationService {
         subtitle: 'Missed call',
         callbackText: 'Call back',
       ),
-      extra: <String, dynamic>{'channelName':message.data["channelName"],'videoToken' : message.data["videoToken"]},
+      extra: <String, dynamic>{'channelName':message.data["channelName"],'videoToken' : message.data["videoToken"],"isAudio" :message.data["isAudio"],},
       headers: <String, dynamic>{'apiKey': 'Abc@123!', 'platform': 'flutter'},
       android: const AndroidParams(
         isCustomNotification: true,

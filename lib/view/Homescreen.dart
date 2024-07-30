@@ -50,31 +50,63 @@ class _HomeScreenState extends State<HomeScreen> {
             itemBuilder: (context, index) {
               final userData = users[index];
               if(userData.email != userModel.email){
-                return ListTile(
-                  onTap: () async {
-                    String token = await getVideoCallToken(channelId: "${userModel.id}${userData.id}");
-                    sendPopupNotification(
-                        pushNotification: PushNotification(
-                          title: userModel.name,
-                          body: "Calling you",
-                          deviceToken: userData.token ?? "",
-                          videoToken: token,
-                          channelName: "${userModel.id}${userData.id}",
-                          loginUserDeviceToken: userModel.token ?? "",
-                          notificationRoute: "call",
-                          userCallingId: userModel.id ?? "",
-                          routeParameterId: "${userModel.id}${userData.id}",
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(userData.name,style: const TextStyle(fontSize: 18),),
+                          Text(userData.email),
+                        ],
+                      ),
+                      const Spacer(),
+                      IconButton(onPressed: () async {
+                        String token = await getVideoCallToken(channelId: "${userModel.id}${userData.id}");
+                        sendPopupNotification(
+                            pushNotification: PushNotification(
+                              title: userModel.name,
+                              body: "Calling you",
+                              deviceToken: userData.token ?? "",
+                              videoToken: token,
+                              channelName: "${userModel.id}${userData.id}",
+                              loginUserDeviceToken: userModel.token ?? "",
+                              notificationRoute: "call",
+                              isAudio: "true",
+                              routeParameterId: "${userModel.id}${userData.id}",
+                            ));
+                        Get.to(() => VideoCallScreen(
+                          channelId: "${userModel.id}${userData.id}",
+                          token: token,
+                          isAudio: "true",
                         ));
-                    Get.to(() => VideoCallScreen(
-                      channelId: "${userModel.id}${userData.id}",
-                      token: token,
-                    ));
-                  },
-                  title: Text(userData.name),
-                  subtitle: Text(userData.email),
+                      }, icon: const Icon(Icons.call,size: 25)),
+                      IconButton(onPressed: () async {
+                        String token = await getVideoCallToken(channelId: "${userModel.id}${userData.id}");
+                        sendPopupNotification(
+                            pushNotification: PushNotification(
+                              title: userModel.name,
+                              body: "Calling you",
+                              deviceToken: userData.token ?? "",
+                              videoToken: token,
+                              channelName: "${userModel.id}${userData.id}",
+                              loginUserDeviceToken: userModel.token ?? "",
+                              notificationRoute: "call",
+                              isAudio: "false",
+                              routeParameterId: "${userModel.id}${userData.id}",
+                            ));
+                        Get.to(() => VideoCallScreen(
+                          channelId: "${userModel.id}${userData.id}",
+                          token: token,
+                          isAudio: "false",
+                        ));
+                      }, icon: const Icon(Icons.video_call,size: 25))
+                    ],
+                  ),
                 );
               }else{
-                return SizedBox();
+                return const SizedBox();
               }
 
             },
