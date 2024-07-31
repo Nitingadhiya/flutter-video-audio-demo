@@ -11,26 +11,127 @@ This project was built using the following tools:
 
 ## Getting Started 🚀
 
-- setup send firebase notification
- 
+### setup firebase
+``` dart
+firebase_core: ^3.2.0
+``` 
+### Login and sign up with firebase auth
+    - add this packege
+``` dart
+firebase_auth: ^5.1.2
+``` 
+    - create login and sign up page 
+    - and save user data with fcm token in firestore database
+    - and get all user data in home page 
+
+### Add video call
+
+ - add this package and follow the step in your project
+   - create the appId in agora platform -> https://console.agora.io/
+``` dart
+agora_rtc_engine: ^6.3.2
+``` 
+  - create token for this api
+    - 
+
+
+###   setup send firebase notification
+
+1. download serviceAccountKey.json file in firebase
+   - follow this path -> project setting-> service account -> Generate new private key
+     <img src='https://firebasestorage.googleapis.com/v0/b/video-audio-call-faf0f.appspot.com/o/Screenshot%202024-07-31%20at%204.20.45%E2%80%AFPM.png?alt=media&token=4f548748-a3ff-4a7a-9f43-85ebc3b06ec0' width='600'></img></a>
+   - save this file in your project
+
+2. create notification_server.json for create local server in get access token for notification send api
+   - `config/service.json` to replace your serviceAccountKey.json path
+ ``` dart
+const express = require('express');
+const { google } = require('googleapis');
+const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
+const app = express();
+const port = 3000;
+
+const SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
+
+// Load service account key from file
+function loadServiceAccountKey() {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path.join(__dirname, 'config/service.json'), 'utf8', (err, data) => {
+      if (err) {
+        reject(new Error('Failed to read service account key: ' + err.message));
+        return;
+      }
+      try {
+        resolve(JSON.parse(data));
+      } catch (parseErr) {
+        reject(new Error('Failed to parse service account key JSON: ' + parseErr.message));
+      }
+    });
+  });
+}
+
+// Get access token function
+async function getAccessToken() {
+  try {
+    const key = await loadServiceAccountKey();
+    const jwtClient = new google.auth.JWT(
+      key.client_email,
+      null,
+      key.private_key,
+      SCOPES,
+      null
+    );
+    return new Promise((resolve, reject) => {
+      jwtClient.authorize((err, tokens) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(tokens.access_token);
+      });
+    });
+  } catch (err) {
+    throw new Error('Failed to get access token: ' + err.message);
+  }
+}
+
+// Middleware
+app.use(cors());
+
+// Endpoint to get access token
+app.get('/getAccessToken', async (req, res) => {
+  try {
+    const accessToken = await getAccessToken();
+    res.json({ accessToken });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Start the server
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
+});
+```
+3. then run command in your project terminal
+
+ ``` dart
+node notification_server.js
+```
+
+4. run api in postman for get token
+
+ ``` dart
+curl --location 'http://localhost:3000/getAccessToken'
+```
+
+
   1. run local server in terminal -> node notification_server.js
   2. after run cUrl in postman -> return accessToken
 
-  curl 'http://localhost:3000/getAccessToken' \
-  -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7' \
-  -H 'Accept-Language: en-US,en;q=0.9' \
-  -H 'Cache-Control: max-age=0' \
-  -H 'Connection: keep-alive' \
-  -H 'If-None-Match: W/"412-v0q5iMmhuTSRkIQc70fGTJo67ok"' \
-  -H 'Sec-Fetch-Dest: document' \
-  -H 'Sec-Fetch-Mode: navigate' \
-  -H 'Sec-Fetch-Site: none' \
-  -H 'Sec-Fetch-User: ?1' \
-  -H 'Upgrade-Insecure-Requests: 1' \
-  -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36' \
-  -H 'sec-ch-ua: "Not/A)Brand";v="8", "Chromium";v="126", "Google Chrome";v="126"' \
-  -H 'sec-ch-ua-mobile: ?0' \
-  -H 'sec-ch-ua-platform: "macOS"'
+
 
   - Response
     {

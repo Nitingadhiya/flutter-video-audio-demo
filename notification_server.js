@@ -12,7 +12,7 @@ const SCOPES = ['https://www.googleapis.com/auth/cloud-platform'];
 // Load service account key from file
 function loadServiceAccountKey() {
   return new Promise((resolve, reject) => {
-    fs.readFile(path.join(__dirname, 'config/service.json'), 'utf8', (err, data) => {
+    fs.readFile(path.join(__dirname, 'server_config/service.json'), 'utf8', (err, data) => {
       if (err) {
         reject(new Error('Failed to read service account key: ' + err.message));
         return;

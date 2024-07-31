@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:video_audio_call/model/push_notification_model.dart';
 import 'package:video_audio_call/model/user_model.dart';
 import 'package:video_audio_call/service/database.dart';
-import 'package:video_audio_call/service/events.dart';
+import 'package:video_audio_call/service/function.dart';
 import 'package:video_audio_call/view/FirebaseMessaging.dart';
 import 'package:video_audio_call/view/login_screen.dart';
 import 'package:video_audio_call/view/video_call_new_screen.dart';
