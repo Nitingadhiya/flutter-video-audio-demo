@@ -1,0 +1,5 @@
+ -keep class com.hiennv.flutter_callkit_incoming.** { *; }
+ -keep class com.izooto.** { *; }
+ -keep class com.zest.android.** { *; }
+ -keep class com.zest.ios.** { *; }
+ -keep class com.hiennguyenraovat.plugins.** { *; }

@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_audio_call/main.dart';
+import 'package:video_audio_call/model/user_model.dart';
 import 'package:video_audio_call/service/auth_service.dart';
+import 'package:video_audio_call/service/database.dart';
+import 'package:video_audio_call/view/Homescreen.dart';
 import 'package:video_audio_call/view/sign_up_screen.dart';
+
+UserModel userModel = UserModel(name: '', email: '');
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -39,7 +47,22 @@ class _SignInScreenState extends State<SignInScreen> {
                   _emailController.text,
                   _passwordController.text,
                 );
-                if (user != null) {}
+                if (user != null) {
+                  final DatabaseService databaseService = DatabaseService();
+                  Stream<List<UserModel>> getUserDataStream = databaseService.getUsers();
+                  getUserDataStream.listen((getUserData) {
+                    for (var element in getUserData) {
+                      if (element.email == _emailController.text) {
+                        databaseService.updateUser(element.id ?? "", UserModel(email: _emailController.text, id: element.id, name: element.name, token: storage.read("fcmToken")));
+                        userModel = UserModel(email: _emailController.text, id: element.id, name: element.name, token: storage.read("fcmToken"));
+                        storage.write("user", userModel.toMap());
+                        Get.to(() => HomeScreen());
+                        break;
+                      }
+                    }
+                  });
+
+                }
               },
               child: const Text('Sign In'),
             ),
